@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEX Pair Search</title>
+<style>
+  :root {
+    --bg: #0b0e11;
+    --card: #14181d;
+    --border: #232830;
+    --text: #e8ebee;
+    --muted: #8a94a3;
+    --green: #22c55e;
+    --red: #ef4444;
+    --accent: #3b82f6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.sub { color: var(--muted); margin: 0 0 20px; font-size: 14px; }
+  .search-box {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  input[type="text"] {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+  }
+  input[type="text"]:focus { border-color: var(--accent); }
+  button.search-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0 18px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .status { color: var(--muted); font-size: 13px; margin-bottom: 12px; min-height: 18px; }
+  .results { display: flex; flex-direction: column; gap: 10px; }
+  .pair-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .pair-info { min-width: 0; }
+  .pair-title { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .chain-tag {
+    font-size: 11px;
+    background: #1e2530;
+    color: var(--muted);
+    padding: 2px 7px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .pair-sub { color: var(--muted); font-size: 12px; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pair-stats { text-align: right; font-size: 13px; flex-shrink: 0; }
+  .price { font-weight: 600; }
+  .change-pos { color: var(--green); }
+  .change-neg { color: var(--red); }
+  .actions { display: flex; gap: 6px; margin-top: 8px; }
+  a.chart-link, button.track-btn {
+    font-size: 12px;
+    text-decoration: none;
+    background: #1e2530;
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+  a.chart-link:hover, button.track-btn:hover { border-color: var(--accent); }
+  .empty { color: var(--muted); text-align: center; padding: 40px 0; font-size: 14px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>DEX Pair Search</h1>
+  <p class="sub">Search any token or pair across all chains DexScreener indexes.</p>
+
+  <div class="search-box">
+    <input type="text" id="query" placeholder="Search by name or symbol, e.g. BONK" autocomplete="off">
+    <button class="search-btn" id="searchBtn">Search</button>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div class="results" id="results"></div>
+</div>
+
+<script>
+const input = document.getElementById('query');
+const btn = document.getElementById('searchBtn');
+const statusEl = document.getElementById('status');
+const resultsEl = document.getElementById('results');
+
+async function search() {
+  const q = input.value.trim();
+  if (!q) return;
+  statusEl.textContent = 'Searching…';
+  resultsEl.innerHTML = '';
+
+  try {
+    const res = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(q)}`);
+    if (!res.ok) throw new Error('Request failed: ' + res.status);
+    const data = await res.json();
+    const pairs = (data.pairs || []).slice(0, 25);
+
+    if (pairs.length === 0) {
+      resultsEl.innerHTML = '<div class="empty">No pairs found.</div>';
+      statusEl.textContent = '';
+      return;
+    }
+
+    statusEl.textContent = `${pairs.length} result${pairs.length === 1 ? '' : 's'}`;
+    resultsEl.innerHTML = pairs.map(renderCard).join('');
+  } catch (err) {
+    statusEl.textContent = 'Search failed: ' + err.message;
+  }
+}
+
+function renderCard(p) {
+  const base = p.baseToken?.symbol || '?';
+  const quote = p.quoteToken?.symbol || '?';
+  const price = p.priceUsd ? '$' + Number(p.priceUsd).toPrecision(6) : 'n/a';
+  const change = p.priceChange?.h24;
+  const changeClass = change > 0 ? 'change-pos' : change < 0 ? 'change-neg' : '';
+  const changeText = typeof change === 'number' ? `${change > 0 ? '+' : ''}${change.toFixed(2)}%` : '—';
+  const chartUrl = `chart.html?chain=${encodeURIComponent(p.chainId)}&pair=${encodeURIComponent(p.pairAddress)}`;
+
+  return `
+    <div class="pair-card">
+      <div class="pair-info">
+        <div class="pair-title">
+          ${escapeHtml(base)}/${escapeHtml(quote)}
+          <span class="chain-tag">${escapeHtml(p.chainId)}</span>
+        </div>
+        <div class="pair-sub">${escapeHtml(p.dexId || '')} · ${escapeHtml(p.pairAddress)}</div>
+        <div class="actions">
+          <a class="chart-link" href="${chartUrl}">View Chart →</a>
+          <button class="track-btn" onclick="trackPair('${p.chainId}','${p.pairAddress}')">+ Track</button>
+        </div>
+      </div>
+      <div class="pair-stats">
+        <div class="price">${price}</div>
+        <div class="${changeClass}">${changeText}</div>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+function trackPair(chainId, pairAddress) {
+  // Tracking requires adding the pair to fetcher/pairs.json, which happens via
+  // the repo's GitHub Action (so no token/credentials are needed in the browser).
+  // Easiest path: open the Actions "Run workflow" form with the values pre-filled
+  // isn't directly linkable, so we copy the values and point the user to Actions.
+  const text = `chain: ${chainId}\npairAddress: ${pairAddress}`;
+  navigator.clipboard?.writeText(`${chainId}\n${pairAddress}`).catch(() => {});
+  alert(
+    'Copied to clipboard:\n\n' + text +
+    '\n\nTo start tracking this pair:\n' +
+    '1. Go to this repo\'s Actions tab → "Fetch DEX data" → "Run workflow"\n' +
+    '2. Paste the chain into "add_pair_chain" and the address into "add_pair_address"\n' +
+    '3. Run it — the pair will start appearing on its chart page within ~15 min.'
+  );
+}
+
+input.addEventListener('keydown', e => { if (e.key === 'Enter') search(); });
+btn.addEventListener('click', search);
+</script>
+</body>
+</html>

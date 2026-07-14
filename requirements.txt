@@ -1,0 +1,5 @@
+# fetch.py and aggregate.py use only the Python standard library.
+# playwright is installed on-demand by the workflow only when the sniff
+# fallback is triggered (see .github/workflows/fetch.yml), so it's listed
+# here for reference/local dev but not required for normal runs.
+playwright
