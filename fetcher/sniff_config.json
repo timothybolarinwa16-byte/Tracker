@@ -1,0 +1,8 @@
+{
+  "_comment": "Written by sniff.py when it successfully discovers a working internal endpoint pattern. Empty/null means: no sniffed pattern yet, use public API only.",
+  "url_template": null,
+  "headers": {},
+  "discovered_at": null,
+  "last_verified_at": null,
+  "consecutive_failures": 0
+}
