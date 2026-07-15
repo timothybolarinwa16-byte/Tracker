@@ -1,0 +1,11 @@
+{
+  "bsc:0x71f5a8F7d448E59B1ede00A19fE59e05d125E742": {
+    "chainId": "bsc",
+    "pairAddress": "0x71f5a8F7d448E59B1ede00A19fE59e05d125E742",
+    "baseSymbol": "XRP",
+    "quoteSymbol": "USDT",
+    "dexId": "pancakeswap",
+    "url": "https://dexscreener.com/bsc/0x71f5a8f7d448e59b1ede00a19fe59e05d125e742",
+    "updated_at": "2026-07-15T11:00:26.872088+00:00"
+  }
+}

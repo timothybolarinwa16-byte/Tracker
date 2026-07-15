@@ -1,4 +1,9 @@
 {
   "_comment": "List of pairs the fetcher polls every run. Add entries here (manually, or via the GitHub Action 'Add Pair' workflow_dispatch) to start tracking a pair. chainId + pairAddress come from a DexScreener pair URL, e.g. https://dexscreener.com/{chainId}/{pairAddress}",
-  "pairs": []
+  "pairs": [
+    {
+      "chainId": "bsc",
+      "pairAddress": "0x71f5a8F7d448E59B1ede00A19fE59e05d125E742"
+    }
+  ]
 }
