@@ -12,6 +12,10 @@
     {
       "chainId": "bsc",
       "pairAddress": "0x9F5a0AD81Fe7fD5dFb84EE7A0CFb83967359BD90"
+    },
+    {
+      "chainId": "bsc",
+      "pairAddress": "0x2f74ad2c64be7DC07C9f51E9d338EcB7C1ee0B18"
     }
   ]
 }
