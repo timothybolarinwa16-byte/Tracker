@@ -4,6 +4,10 @@
     {
       "chainId": "bsc",
       "pairAddress": "0x71f5a8F7d448E59B1ede00A19fE59e05d125E742"
+    },
+    {
+      "chainId": "solana",
+      "pairAddress": "B2qqNAtLQ8oXpuuXXphvtAAED8LmBH494fMy2EHoc4uL"
     }
   ]
 }
