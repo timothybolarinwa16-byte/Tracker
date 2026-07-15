@@ -1,0 +1,90 @@
+name: Fetch DEX data
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      add_pair_chain:
+        description: "Chain ID to add to pairs.json (optional, e.g. solana)"
+        required: false
+      add_pair_address:
+        description: "Pair address to add to pairs.json (optional)"
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fetch-data
+  cancel-in-progress: false
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Add pair (manual dispatch only)
+        if: ${{ github.event.inputs.add_pair_chain != '' && github.event.inputs.add_pair_address != '' }}
+        run: |
+          python - <<'EOF'
+          import json, os
+          path = "fetcher/pairs.json"
+          with open(path) as f:
+              cfg = json.load(f)
+          chain = os.environ["ADD_CHAIN"]
+          addr = os.environ["ADD_ADDR"]
+          existing = {(p["chainId"], p["pairAddress"]) for p in cfg["pairs"]}
+          if (chain, addr) not in existing:
+              cfg["pairs"].append({"chainId": chain, "pairAddress": addr})
+              with open(path, "w") as f:
+                  json.dump(cfg, f, indent=2)
+              print(f"Added {chain}/{addr}")
+          else:
+              print("Already tracked")
+          EOF
+        env:
+          ADD_CHAIN: ${{ github.event.inputs.add_pair_chain }}
+          ADD_ADDR: ${{ github.event.inputs.add_pair_address }}
+
+      - name: Run primary fetcher
+        run: python fetcher/fetch.py
+
+      - name: Check if sniff fallback is needed
+        id: check_sniff
+        run: |
+          if [ -f "fetcher/storage/NEEDS_SNIFF" ]; then
+            echo "needed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "needed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Install Playwright (only if sniff fallback needed)
+        if: steps.check_sniff.outputs.needed == 'true'
+        run: |
+          pip install playwright
+          playwright install --with-deps chromium
+
+      - name: Run sniff fallback
+        if: steps.check_sniff.outputs.needed == 'true'
+        run: python fetcher/sniff.py
+
+      - name: Re-run fetcher after sniff (pick up new endpoint)
+        if: steps.check_sniff.outputs.needed == 'true'
+        run: python fetcher/fetch.py
+
+      - name: Aggregate into timeframe buckets
+        run: python fetcher/aggregate.py
+
+      - name: Commit updated data
+        run: |
+          git config user.name "dex-tx-tracker-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add fetcher/storage fetcher/sniff_config.json fetcher/pairs.json
+          git diff --staged --quiet || git commit -m "chore: update data [skip ci]"
+          git push
