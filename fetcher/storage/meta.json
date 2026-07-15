@@ -6,6 +6,24 @@
     "quoteSymbol": "USDT",
     "dexId": "pancakeswap",
     "url": "https://dexscreener.com/bsc/0x71f5a8f7d448e59b1ede00a19fe59e05d125e742",
-    "updated_at": "2026-07-15T13:16:48.004864+00:00"
+    "updated_at": "2026-07-15T15:06:36.289863+00:00"
+  },
+  "solana:B2qqNAtLQ8oXpuuXXphvtAAED8LmBH494fMy2EHoc4uL": {
+    "chainId": "solana",
+    "pairAddress": "B2qqNAtLQ8oXpuuXXphvtAAED8LmBH494fMy2EHoc4uL",
+    "baseSymbol": "SOL-USDT",
+    "quoteSymbol": "USDC",
+    "dexId": "raydium",
+    "url": "https://dexscreener.com/solana/b2qqnatlq8oxpuuxxphvtaaed8lmbh494fmy2ehoc4ul",
+    "updated_at": "2026-07-15T15:06:37.491606+00:00"
+  },
+  "bsc:0x9F5a0AD81Fe7fD5dFb84EE7A0CFb83967359BD90": {
+    "chainId": "bsc",
+    "pairAddress": "0x9F5a0AD81Fe7fD5dFb84EE7A0CFb83967359BD90",
+    "baseSymbol": "SOL",
+    "quoteSymbol": "USDT",
+    "dexId": "pancakeswap",
+    "url": "https://dexscreener.com/bsc/0x9f5a0ad81fe7fd5dfb84ee7a0cfb83967359bd90",
+    "updated_at": "2026-07-15T15:06:38.666831+00:00"
   }
 }

@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "chainId": "bsc",
+    "pairAddress": "0x9F5a0AD81Fe7fD5dFb84EE7A0CFb83967359BD90",
+    "baseSymbol": "SOL",
+    "quoteSymbol": "USDT",
+    "dexId": "pancakeswap",
+    "url": "https://dexscreener.com/bsc/0x9f5a0ad81fe7fd5dfb84ee7a0cfb83967359bd90",
+    "updated_at": "2026-07-15T15:06:38.666831+00:00"
+  },
+  "generated_at": "2026-07-15T15:06:39.715597+00:00",
+  "timeframes": {
+    "15m": [
+      {
+        "t": "2026-07-15T15:00:00+00:00",
+        "buys": 0,
+        "sells": 0,
+        "txns": 0
+      }
+    ],
+    "1h": [
+      {
+        "t": "2026-07-15T15:00:00+00:00",
+        "buys": 0,
+        "sells": 0,
+        "txns": 0
+      }
+    ],
+    "4h": [
+      {
+        "t": "2026-07-15T12:00:00+00:00",
+        "buys": 0,
+        "sells": 0,
+        "txns": 0
+      }
+    ],
+    "1d": [
+      {
+        "t": "2026-07-15T00:00:00+00:00",
+        "buys": 0,
+        "sells": 0,
+        "txns": 0
+      }
+    ]
+  }
+}
