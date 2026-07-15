@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DEX Pair Search</title>
+<style>
+  :root {
+    --bg: #0b0e11;
+    --card: #14181d;
+    --border: #232830;
+    --text: #e8ebee;
+    --muted: #8a94a3;
+    --green: #22c55e;
+    --red: #ef4444;
+    --accent: #3b82f6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 24px 16px 60px;
+  }
+  .wrap { max-width: 780px; margin: 0 auto; }
+  h1 { font-size: 20px; margin: 0 0 4px; }
+  p.sub { color: var(--muted); margin: 0 0 20px; font-size: 14px; }
+  .search-box {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  input[type="text"], input[type="password"] {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+  }
+  input[type="text"]:focus, input[type="password"]:focus { border-color: var(--accent); }
+  button.search-btn, button.setup-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 0 18px;
+    font-size: 15px;
+    cursor: pointer;
+  }
+  .status { color: var(--muted); font-size: 13px; margin-bottom: 12px; min-height: 18px; }
+  .results { display: flex; flex-direction: column; gap: 10px; }
+  .pair-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+  .pair-info { min-width: 0; }
+  .pair-title { font-weight: 600; font-size: 15px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .chain-tag {
+    font-size: 11px;
+    background: #1e2530;
+    color: var(--muted);
+    padding: 2px 7px;
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .pair-sub { color: var(--muted); font-size: 12px; margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pair-stats { text-align: right; font-size: 13px; flex-shrink: 0; }
+  .price { font-weight: 600; }
+  .change-pos { color: var(--green); }
+  .change-neg { color: var(--red); }
+  .actions { display: flex; gap: 6px; margin-top: 8px; }
+  a.chart-link, button.track-btn {
+    font-size: 12px;
+    text-decoration: none;
+    background: #1e2530;
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 7px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+  }
+  a.chart-link:hover, button.track-btn:hover { border-color: var(--accent); }
+  .empty { color: var(--muted); text-align: center; padding: 40px 0; font-size: 14px; }
+
+  .setup-banner {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px;
+    margin-bottom: 16px;
+    font-size: 13px;
+  }
+  .setup-banner.connected { border-color: var(--green); }
+  .setup-banner h3 { margin: 0 0 6px; font-size: 14px; }
+  .setup-banner p { color: var(--muted); margin: 0 0 10px; line-height: 1.5; }
+  .setup-row { display: flex; gap: 8px; }
+  .setup-row input { font-size: 13px; }
+  .link-btn { background: none; border: none; color: var(--accent); font-size: 12px; cursor: pointer; padding: 0; margin-top: 8px; }
+  .track-btn.tracked { background: var(--green); color: #0b0e11; border-color: var(--green); }
+  .track-btn:disabled { opacity: 0.6; cursor: default; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>DEX Pair Search</h1>
+  <p class="sub">Search any token or pair across all chains DexScreener indexes.</p>
+
+  <div id="setupBanner"></div>
+
+  <div class="search-box">
+    <input type="text" id="query" placeholder="Search by name or symbol, e.g. BONK" autocomplete="off">
+    <button class="search-btn" id="searchBtn">Search</button>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div class="results" id="results"></div>
+</div>
+
+<script>
+const REPO_OWNER = 'timothybolarinwa16-byte';
+const REPO_NAME = 'Tracker';
+const PAIRS_PATH = 'fetcher/pairs.json';
+const TOKEN_KEY = 'gh_pat_dex_tracker';
+
+const input = document.getElementById('query');
+const btn = document.getElementById('searchBtn');
+const statusEl = document.getElementById('status');
+const resultsEl = document.getElementById('results');
+const setupBannerEl = document.getElementById('setupBanner');
+
+function getToken() {
+  return localStorage.getItem(TOKEN_KEY) || '';
+}
+function setToken(t) {
+  localStorage.setItem(TOKEN_KEY, t);
+}
+function clearToken() {
+  localStorage.removeItem(TOKEN_KEY);
+}
+
+function renderSetupBanner() {
+  const token = getToken();
+  if (token) {
+    setupBannerEl.innerHTML = `
+      <div class="setup-banner connected">
+        <h3>✅ GitHub connected</h3>
+        <p>Tapping "+ Track" will add pairs directly — no manual steps needed.</p>
+        <button class="link-btn" onclick="disconnectGithub()">Disconnect</button>
+      </div>
+    `;
+  } else {
+    setupBannerEl.innerHTML = `
+      <div class="setup-banner">
+        <h3>Connect GitHub to enable one-tap tracking</h3>
+        <p>
+          Create a token once (Settings → Developer settings → Personal access
+          tokens → Fine-grained → this repo only → Contents: Read and write),
+          paste it below. It's stored only in this browser (localStorage), never
+          committed or sent anywhere except GitHub's own API.
+        </p>
+        <div class="setup-row">
+          <input type="password" id="tokenInput" placeholder="ghp_... or github_pat_...">
+          <button class="setup-btn" onclick="saveToken()">Save</button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+function saveToken() {
+  const val = document.getElementById('tokenInput').value.trim();
+  if (!val) return;
+  setToken(val);
+  renderSetupBanner();
+}
+
+function disconnectGithub() {
+  clearToken();
+  renderSetupBanner();
+}
+
+renderSetupBanner();
+
+async function search() {
+  const q = input.value.trim();
+  if (!q) return;
+  statusEl.textContent = 'Searching…';
+  resultsEl.innerHTML = '';
+
+  try {
+    const res = await fetch(`https://api.dexscreener.com/latest/dex/search?q=${encodeURIComponent(q)}`);
+    if (!res.ok) throw new Error('Request failed: ' + res.status);
+    const data = await res.json();
+    const pairs = (data.pairs || []).slice(0, 25);
+
+    if (pairs.length === 0) {
+      resultsEl.innerHTML = '<div class="empty">No pairs found.</div>';
+      statusEl.textContent = '';
+      return;
+    }
+
+    statusEl.textContent = `${pairs.length} result${pairs.length === 1 ? '' : 's'}`;
+    resultsEl.innerHTML = pairs.map(renderCard).join('');
+  } catch (err) {
+    statusEl.textContent = 'Search failed: ' + err.message;
+  }
+}
+
+function renderCard(p) {
+  const base = p.baseToken?.symbol || '?';
+  const quote = p.quoteToken?.symbol || '?';
+  const price = p.priceUsd ? '$' + Number(p.priceUsd).toPrecision(6) : 'n/a';
+  const change = p.priceChange?.h24;
+  const changeClass = change > 0 ? 'change-pos' : change < 0 ? 'change-neg' : '';
+  const changeText = typeof change === 'number' ? `${change > 0 ? '+' : ''}${change.toFixed(2)}%` : '—';
+  const chartUrl = `chart.html?chain=${encodeURIComponent(p.chainId)}&pair=${encodeURIComponent(p.pairAddress)}`;
+  const btnId = `track_${p.chainId}_${p.pairAddress}`.replace(/[^a-zA-Z0-9_]/g, '');
+
+  return `
+    <div class="pair-card">
+      <div class="pair-info">
+        <div class="pair-title">
+          ${escapeHtml(base)}/${escapeHtml(quote)}
+          <span class="chain-tag">${escapeHtml(p.chainId)}</span>
+        </div>
+        <div class="pair-sub">${escapeHtml(p.dexId || '')} · ${escapeHtml(p.pairAddress)}</div>
+        <div class="actions">
+          <a class="chart-link" href="${chartUrl}">View Chart →</a>
+          <button class="track-btn" id="${btnId}" onclick="trackPair('${p.chainId}','${p.pairAddress}','${btnId}')">+ Track</button>
+        </div>
+      </div>
+      <div class="pair-stats">
+        <div class="price">${price}</div>
+        <div class="${changeClass}">${changeText}</div>
+      </div>
+    </div>
+  `;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+async function trackPair(chainId, pairAddress, btnId) {
+  const token = getToken();
+  const btnEl = document.getElementById(btnId);
+
+  if (!token) {
+    alert('Connect GitHub first (see the banner above the search box), then tap + Track again.');
+    return;
+  }
+
+  btnEl.disabled = true;
+  btnEl.textContent = 'Adding…';
+
+  try {
+    const apiBase = `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${PAIRS_PATH}`;
+    const headers = {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/vnd.github+json',
+    };
+
+    const getRes = await fetch(apiBase, { headers });
+    if (!getRes.ok) throw new Error(`Could not read pairs.json (HTTP ${getRes.status})`);
+    const fileData = await getRes.json();
+    const currentContent = JSON.parse(decodeURIComponent(escape(atob(fileData.content))));
+
+    const already = (currentContent.pairs || []).some(
+      p => p.chainId === chainId && p.pairAddress === pairAddress
+    );
+    if (already) {
+      btnEl.textContent = '✓ Tracked';
+      btnEl.classList.add('tracked');
+      return;
+    }
+
+    currentContent.pairs.push({ chainId, pairAddress });
+    const newContentStr = JSON.stringify(currentContent, null, 2);
+    const newContentB64 = btoa(unescape(encodeURIComponent(newContentStr)));
+
+    const putRes = await fetch(apiBase, {
+      method: 'PUT',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: `Track ${chainId}/${pairAddress}`,
+        content: newContentB64,
+        sha: fileData.sha,
+      }),
+    });
+
+    if (!putRes.ok) {
+      const errBody = await putRes.json().catch(() => ({}));
+      throw new Error(errBody.message || `Commit failed (HTTP ${putRes.status})`);
+    }
+
+    btnEl.textContent = '✓ Tracked';
+    btnEl.classList.add('tracked');
+  } catch (err) {
+    btnEl.disabled = false;
+    btnEl.textContent = '+ Track';
+    alert('Failed to track pair: ' + err.message);
+  }
+}
+
+input.addEventListener('keydown', e => { if (e.key === 'Enter') search(); });
+btn.addEventListener('click', search);
+</script>
+</body>
+  </html>
