@@ -31,5 +31,16 @@
     "cum_sells_h1": 1,
     "priceUsd": "1.10",
     "source": "public_api"
+  },
+  {
+    "ts": 1784121408.004864,
+    "iso": "2026-07-15T13:16:48.004864+00:00",
+    "new_buys": 0,
+    "new_sells": 0,
+    "new_txns": 0,
+    "cum_buys_h1": 89,
+    "cum_sells_h1": 4,
+    "priceUsd": "1.12",
+    "source": "public_api"
   }
 ]
