@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transaction Chart</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0b0e11;
+    --card: #14181d;
+    --border: #232830;
+    --text: #e8ebee;
+    --muted: #8a94a3;
+    --accent: #3b82f6;
+    --green: #22c55e;
+    --red: #ef4444;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 20px 14px 50px;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  .back { color: var(--muted); text-decoration: none; font-size: 13px; }
+  h1 { font-size: 19px; margin: 10px 0 2px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .chain-tag {
+    font-size: 11px; background: #1e2530; color: var(--muted);
+    padding: 2px 7px; border-radius: 5px; text-transform: uppercase;
+  }
+  p.sub { color: var(--muted); font-size: 12px; margin: 0 0 18px; word-break: break-all; }
+  .tf-toggle { display: flex; gap: 6px; margin-bottom: 18px; flex-wrap: wrap; }
+  .tf-btn {
+    background: var(--card); border: 1px solid var(--border); color: var(--muted);
+    padding: 7px 14px; border-radius: 8px; font-size: 13px; cursor: pointer;
+  }
+  .tf-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+  .chart-card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 10px; height: 360px;
+  }
+  .stats-row { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  .stat {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 10px 14px; flex: 1; min-width: 110px;
+  }
+  .stat .label { color: var(--muted); font-size: 11px; text-transform: uppercase; }
+  .stat .value { font-size: 17px; font-weight: 600; margin-top: 2px; }
+  .status { color: var(--muted); font-size: 13px; margin: 10px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="home.html">← Back to search</a>
+  <h1 id="title">Loading…</h1>
+  <p class="sub" id="pairAddr"></p>
+
+  <div class="tf-toggle" id="tfToggle">
+    <button class="tf-btn" data-tf="15m">15m</button>
+    <button class="tf-btn" data-tf="1h">1h</button>
+    <button class="tf-btn" data-tf="4h">4h</button>
+    <button class="tf-btn" data-tf="1d">1d</button>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div class="chart-card"><canvas id="txChart"></canvas></div>
+
+  <div class="stats-row">
+    <div class="stat"><div class="label">Total Txns (range)</div><div class="value" id="statTotal">—</div></div>
+    <div class="stat"><div class="label">Buys</div><div class="value" id="statBuys">—</div></div>
+    <div class="stat"><div class="label">Sells</div><div class="value" id="statSells">—</div></div>
+  </div>
+</div>
+
+<script>
+const DATA_BASE_PATH = 'fetcher/storage/aggregated';
+
+const params = new URLSearchParams(location.search);
+const chainId = params.get('chain');
+const pairAddress = params.get('pair');
+let activeTf = '1h';
+let chart = null;
+
+const titleEl = document.getElementById('title');
+const subEl = document.getElementById('pairAddr');
+const statusEl = document.getElementById('status');
+
+if (!chainId || !pairAddress) {
+  titleEl.textContent = 'No pair specified';
+  statusEl.textContent = 'Go back to search and pick a pair.';
+} else {
+  init();
+}
+
+async function init() {
+  subEl.textContent = pairAddress;
+  document.querySelectorAll('.tf-btn').forEach(b => {
+    b.addEventListener('click', () => {
+      activeTf = b.dataset.tf;
+      updateActiveButton();
+      render();
+    });
+  });
+  updateActiveButton();
+  await loadAndRender();
+}
+
+function updateActiveButton() {
+  document.querySelectorAll('.tf-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.tf === activeTf);
+  });
+}
+
+let dataset = null;
+
+async function loadAndRender() {
+  statusEl.textContent = 'Loading data…';
+  const fname = `${chainId}_${pairAddress}.json`;
+  const fullUrl = `${DATA_BASE_PATH}/${fname}`;
+  try {
+    const res = await fetch(fullUrl, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`fetch failed (HTTP ${res.status}) for URL: ${fullUrl}`);
+    dataset = await res.json();
+    const meta = dataset.meta || {};
+    titleEl.innerHTML = `${meta.baseSymbol || '?'}/${meta.quoteSymbol || '?'} <span class="chain-tag">${chainId}</span>`;
+    statusEl.textContent = `Updated ${dataset.generated_at ? new Date(dataset.generated_at).toLocaleString() : 'n/a'}`;
+    render();
+  } catch (err) {
+    titleEl.textContent = 'Pair not tracked yet';
+    statusEl.textContent = 'DEBUG: ' + err.message;
+  }
+}
+
+function render() {
+  if (!dataset) return;
+  const series = dataset.timeframes?.[activeTf] || [];
+  const labels = series.map(p => formatLabel(p.t, activeTf));
+  const values = series.map(p => p.txns);
+  const buys = series.map(p => p.buys);
+  const sells = series.map(p => p.sells);
+
+  const totalTxns = values.reduce((a, b) => a + b, 0);
+  const totalBuys = buys.reduce((a, b) => a + b, 0);
+  const totalSells = sells.reduce((a, b) => a + b, 0);
+  document.getElementById('statTotal').textContent = totalTxns.toLocaleString();
+  document.getElementById('statBuys').textContent = totalBuys.toLocaleString();
+  document.getElementById('statSells').textContent = totalSells.toLocaleString();
+
+  const ctx = document.getElementById('txChart').getContext('2d');
+  if (chart) chart.destroy();
+  chart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: `Transactions (${activeTf} buckets)`,
+        data: values,
+        borderColor: '#3b82f6',
+        backgroundColor: 'rgba(59,130,246,0.12)',
+        fill: true,
+        tension: 0.25,
+        pointRadius: 0,
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            afterLabel: (item) => {
+              const i = item.dataIndex;
+              return `Buys: ${buys[i]}  Sells: ${sells[i]}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: '#8a94a3', maxRotation: 0, autoSkip: true }, grid: { color: '#232830' } },
+        y: { ticks: { color: '#8a94a3' }, grid: { color: '#232830' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+function formatLabel(iso, tf) {
+  const d = new Date(iso);
+  if (tf === '1d') return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  return d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+}
+</script>
+</body>
+</html>
