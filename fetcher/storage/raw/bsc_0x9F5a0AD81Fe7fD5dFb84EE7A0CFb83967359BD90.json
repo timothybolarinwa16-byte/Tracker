@@ -882,5 +882,14 @@
     "new_txns": 0,
     "priceUsd": "77.22",
     "source": "public_api"
+  },
+  {
+    "ts": 1784713200,
+    "iso": "2026-07-22T09:40:00+00:00",
+    "new_buys": 0,
+    "new_sells": 0,
+    "new_txns": 0,
+    "priceUsd": "77.34",
+    "source": "public_api"
   }
 ]
