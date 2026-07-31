@@ -2015,5 +2015,14 @@
     "new_txns": 1,
     "priceUsd": "1.073",
     "source": "public_api"
+  },
+  {
+    "ts": 1785500700,
+    "iso": "2026-07-31T12:25:00+00:00",
+    "new_buys": 1,
+    "new_sells": 1,
+    "new_txns": 2,
+    "priceUsd": "1.073",
+    "source": "public_api"
   }
 ]
