@@ -6,9 +6,9 @@
     "quoteSymbol": "USDT",
     "dexId": "pancakeswap",
     "url": "https://dexscreener.com/bsc/0x2f74ad2c64be7dc07c9f51e9d338ecb7c1ee0b18",
-    "updated_at": "2026-08-09T14:09:47.893554+00:00"
+    "updated_at": "2026-08-09T14:53:46.958732+00:00"
   },
-  "generated_at": "2026-08-09T14:09:48.960358+00:00",
+  "generated_at": "2026-08-09T14:53:48.005799+00:00",
   "timeframes": {
     "15m": [
       {
@@ -2203,6 +2203,12 @@
       },
       {
         "t": "2026-08-09T14:00:00+00:00",
+        "buys": 0,
+        "sells": 0,
+        "txns": 0
+      },
+      {
+        "t": "2026-08-09T14:45:00+00:00",
         "buys": 0,
         "sells": 0,
         "txns": 0
