@@ -6,9 +6,9 @@
     "quoteSymbol": "USDC",
     "dexId": "raydium",
     "url": "https://dexscreener.com/solana/b2qqnatlq8oxpuuxxphvtaaed8lmbh494fmy2ehoc4ul",
-    "updated_at": "2026-08-09T13:26:45.499676+00:00"
+    "updated_at": "2026-08-09T14:09:45.558287+00:00"
   },
-  "generated_at": "2026-08-09T13:26:48.725205+00:00",
+  "generated_at": "2026-08-09T14:09:48.968023+00:00",
   "timeframes": {
     "15m": [
       {
@@ -2206,6 +2206,12 @@
         "buys": 0,
         "sells": 0,
         "txns": 0
+      },
+      {
+        "t": "2026-08-09T14:00:00+00:00",
+        "buys": 0,
+        "sells": 0,
+        "txns": 0
       }
     ],
     "1h": [
@@ -4317,6 +4323,12 @@
       },
       {
         "t": "2026-08-09T13:00:00+00:00",
+        "buys": 0,
+        "sells": 0,
+        "txns": 0
+      },
+      {
+        "t": "2026-08-09T14:00:00+00:00",
         "buys": 0,
         "sells": 0,
         "txns": 0
