@@ -1,41 +1,5 @@
 [
   {
-    "ts": 1787190000,
-    "iso": "2026-08-20T01:40:00+00:00",
-    "new_buys": 0,
-    "new_sells": 0,
-    "new_txns": 0,
-    "priceUsd": "84.87",
-    "source": "public_api"
-  },
-  {
-    "ts": 1787193600,
-    "iso": "2026-08-20T02:40:00+00:00",
-    "new_buys": 0,
-    "new_sells": 1,
-    "new_txns": 1,
-    "priceUsd": "85.051",
-    "source": "public_api"
-  },
-  {
-    "ts": 1787196600,
-    "iso": "2026-08-20T03:30:00+00:00",
-    "new_buys": 1,
-    "new_sells": 0,
-    "new_txns": 1,
-    "priceUsd": "84.37",
-    "source": "public_api"
-  },
-  {
-    "ts": 1787199300,
-    "iso": "2026-08-20T04:15:00+00:00",
-    "new_buys": 0,
-    "new_sells": 0,
-    "new_txns": 0,
-    "priceUsd": "84.48",
-    "source": "public_api"
-  },
-  {
     "ts": 1787202000,
     "iso": "2026-08-20T05:00:00+00:00",
     "new_buys": 0,
@@ -3462,6 +3426,15 @@
     "new_sells": 1,
     "new_txns": 1,
     "priceUsd": "112.77",
+    "source": "public_api"
+  },
+  {
+    "ts": 1789792800,
+    "iso": "2026-09-19T04:40:00+00:00",
+    "new_buys": 7,
+    "new_sells": 8,
+    "new_txns": 15,
+    "priceUsd": "112.31",
     "source": "public_api"
   }
 ]
