@@ -1,86 +1,5 @@
 [
   {
-    "ts": 1787494800,
-    "iso": "2026-08-23T14:20:00+00:00",
-    "new_buys": 0,
-    "new_sells": 0,
-    "new_txns": 0,
-    "priceUsd": "95.41",
-    "source": "public_api"
-  },
-  {
-    "ts": 1787496600,
-    "iso": "2026-08-23T14:50:00+00:00",
-    "new_buys": 5,
-    "new_sells": 0,
-    "new_txns": 5,
-    "priceUsd": "94.67",
-    "source": "public_api"
-  },
-  {
-    "ts": 1787498100,
-    "iso": "2026-08-23T15:15:00+00:00",
-    "new_buys": 0,
-    "new_sells": 5,
-    "new_txns": 5,
-    "priceUsd": "95.37",
-    "source": "public_api"
-  },
-  {
-    "ts": 1787499600,
-    "iso": "2026-08-23T15:40:00+00:00",
-    "new_buys": 0,
-    "new_sells": 0,
-    "new_txns": 0,
-    "priceUsd": "95.62",
-    "source": "public_api"
-  },
-  {
-    "ts": 1787500800,
-    "iso": "2026-08-23T16:00:00+00:00",
-    "new_buys": 0,
-    "new_sells": 4,
-    "new_txns": 4,
-    "priceUsd": "95.56",
-    "source": "public_api"
-  },
-  {
-    "ts": 1787502900,
-    "iso": "2026-08-23T16:35:00+00:00",
-    "new_buys": 1,
-    "new_sells": 0,
-    "new_txns": 1,
-    "priceUsd": "95.44",
-    "source": "public_api"
-  },
-  {
-    "ts": 1787504400,
-    "iso": "2026-08-23T17:00:00+00:00",
-    "new_buys": 0,
-    "new_sells": 0,
-    "new_txns": 0,
-    "priceUsd": "95.44",
-    "source": "public_api"
-  },
-  {
-    "ts": 1787506200,
-    "iso": "2026-08-23T17:30:00+00:00",
-    "new_buys": 0,
-    "new_sells": 0,
-    "new_txns": 0,
-    "priceUsd": "95.25",
-    "source": "public_api"
-  },
-  {
-    "ts": 1787507400,
-    "iso": "2026-08-23T17:50:00+00:00",
-    "new_buys": 0,
-    "new_sells": 0,
-    "new_txns": 0,
-    "priceUsd": "95.076",
-    "source": "public_api"
-  },
-  {
     "ts": 1787509500,
     "iso": "2026-08-23T18:25:00+00:00",
     "new_buys": 2,
@@ -2454,6 +2373,15 @@
     "new_sells": 0,
     "new_txns": 0,
     "priceUsd": "117.68",
+    "source": "public_api"
+  },
+  {
+    "ts": 1790100300,
+    "iso": "2026-09-22T18:05:00+00:00",
+    "new_buys": 0,
+    "new_sells": 0,
+    "new_txns": 0,
+    "priceUsd": "117.89",
     "source": "public_api"
   }
 ]
