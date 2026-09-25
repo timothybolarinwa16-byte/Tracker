@@ -1,14 +1,5 @@
 [
   {
-    "ts": 1787771100,
-    "iso": "2026-08-26T19:05:00+00:00",
-    "new_buys": 0,
-    "new_sells": 0,
-    "new_txns": 0,
-    "priceUsd": "0.000002891",
-    "source": "public_api"
-  },
-  {
     "ts": 1787780700,
     "iso": "2026-08-26T21:45:00+00:00",
     "new_buys": 0,
@@ -1725,6 +1716,15 @@
     "new_sells": 0,
     "new_txns": 0,
     "priceUsd": "0.000003660",
+    "source": "public_api"
+  },
+  {
+    "ts": 1790368800,
+    "iso": "2026-09-25T20:40:00+00:00",
+    "new_buys": 3,
+    "new_sells": 0,
+    "new_txns": 3,
+    "priceUsd": "0.000003684",
     "source": "public_api"
   }
 ]
