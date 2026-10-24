@@ -6,7 +6,7 @@
     "quoteSymbol": "USDT",
     "dexId": "pancakeswap",
     "url": "https://dexscreener.com/bsc/0x71f5a8f7d448e59b1ede00a19fe59e05d125e742",
-    "updated_at": "2026-10-24T06:32:32.237989+00:00"
+    "updated_at": "2026-10-24T11:35:03.746709+00:00"
   },
   "solana:B2qqNAtLQ8oXpuuXXphvtAAED8LmBH494fMy2EHoc4uL": {
     "chainId": "solana",
@@ -15,7 +15,7 @@
     "quoteSymbol": "USDC",
     "dexId": "raydium",
     "url": "https://dexscreener.com/solana/b2qqnatlq8oxpuuxxphvtaaed8lmbh494fmy2ehoc4ul",
-    "updated_at": "2026-10-24T06:32:33.334568+00:00"
+    "updated_at": "2026-10-24T11:35:04.892596+00:00"
   },
   "bsc:0x9F5a0AD81Fe7fD5dFb84EE7A0CFb83967359BD90": {
     "chainId": "bsc",
@@ -24,7 +24,7 @@
     "quoteSymbol": "USDT",
     "dexId": "pancakeswap",
     "url": "https://dexscreener.com/bsc/0x9f5a0ad81fe7fd5dfb84ee7a0cfb83967359bd90",
-    "updated_at": "2026-10-24T06:32:34.422746+00:00"
+    "updated_at": "2026-10-24T11:35:06.038139+00:00"
   },
   "bsc:0x2f74ad2c64be7DC07C9f51E9d338EcB7C1ee0B18": {
     "chainId": "bsc",
@@ -33,6 +33,6 @@
     "quoteSymbol": "USDT",
     "dexId": "pancakeswap",
     "url": "https://dexscreener.com/bsc/0x2f74ad2c64be7dc07c9f51e9d338ecb7c1ee0b18",
-    "updated_at": "2026-10-24T06:32:35.501543+00:00"
+    "updated_at": "2026-10-24T11:35:07.173742+00:00"
   }
 }
